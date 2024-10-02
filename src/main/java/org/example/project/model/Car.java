@@ -1,7 +1,7 @@
 package org.example.project.model;
 
 public class Car {
-
+    private int id = -1;
     private String spz;
     private String color;
     private float tankVolume;
@@ -14,6 +14,10 @@ public class Car {
         this.color = color;
         this.tankVolume = tankVolume;
         this.numberOfSeats = numberOfSeats;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getSpz() {
@@ -30,6 +34,10 @@ public class Car {
 
     public int getNumberOfSeats() {
         return numberOfSeats;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setSpz(String spz) {
