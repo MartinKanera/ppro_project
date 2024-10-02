@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail of the Car</title>
+</head>
+<body>
+    <a th:href="@{'/edit'}">Edit Car</a><br>
+    <a th:href="@{'/delete'}">Delete Car</a><br>
+    <b>SPZ: <span th:text="${car.spz}"></span></b><br>
+    <b>Color: <span th:text="${car.color}"></span></b><br>
+    <b>Tank Volume: <span th:text="${car.tankVolume}"></span></b><br>
+    <b>Number of Seats: <span th:text="${car.numberOfSeats}"></span></b>
+
+</body>
+</html>
