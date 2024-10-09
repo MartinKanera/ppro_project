@@ -1,6 +1,8 @@
 package org.example.project.controller;
 
 import org.example.project.model.Car;
+import org.example.project.service.CarService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,35 +10,37 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Controller
 public class CarController {
 
-    List<Car> cars = new ArrayList<>();
+    private final CarService carService;
+
+    @Autowired
+    public CarController(CarService carService) {
+        this.carService = carService;
+    }
 
     @GetMapping("/")
     public String list(Model model) {
-        model.addAttribute("cars", cars);
+        model.addAttribute("cars", carService.getAllCars());
         return "list";
     }
 
     @GetMapping("/detail/{index}")
     public String detail(Model model, @PathVariable  int index) {
-        if (index < 0 || index >= cars.size()) {
+        Car car = carService.getCarById(index);
+
+        if (car == null) {
             return "redirect:/";
         }
 
-        model.addAttribute("car", cars.get(index));
+        model.addAttribute("car", car);
         return "detail";
     }
 
     @GetMapping("/delete/{index}")
     public String delete(@PathVariable int index) {
-        if (index >= 0 && index < cars.size()) {
-            cars.remove(index);
-        }
+        carService.removeCarById(index);
         return "redirect:/";
     }
 
@@ -49,23 +53,22 @@ public class CarController {
 
     @GetMapping("/edit/{index}")
     public String edit(Model model, @PathVariable int index) {
-        if (index < 0 || index >= cars.size()) {
+        Car car = carService.getCarById(index);
+
+        if (car == null) {
             return "redirect:/";
         }
-        Car car = cars.get(index);
+
         car.setId(index);
         model.addAttribute("car", car);
         model.addAttribute("edit", true);
+
         return "edit";
     }
 
     @PostMapping("/save")
     public String save(@ModelAttribute Car car) {
-        if (car.getId() > -1) {
-            cars.remove(car.getId());
-        }
-
-        cars.add(car);
+        carService.saveCar(car);
         return "redirect:/";
     }
 }
