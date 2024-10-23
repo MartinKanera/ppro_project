@@ -1,16 +1,16 @@
 package org.example.project.controller;
 
+import jakarta.validation.Valid;
 import org.example.project.model.Car;
 import org.example.project.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/cars")
 public class CarController {
 
     private final CarService carService;
@@ -23,7 +23,7 @@ public class CarController {
     @GetMapping("/")
     public String list(Model model) {
         model.addAttribute("cars", carService.getAllCars());
-        return "list";
+        return "car_list";
     }
 
     @GetMapping("/detail/{index}")
@@ -31,24 +31,24 @@ public class CarController {
         Car car = carService.getCarById(index);
 
         if (car == null) {
-            return "redirect:/";
+            return "redirect:/cars/";
         }
 
         model.addAttribute("car", car);
-        return "detail";
+        return "car_detail";
     }
 
     @GetMapping("/delete/{index}")
     public String delete(@PathVariable int index) {
         carService.removeCarById(index);
-        return "redirect:/";
+        return "redirect:/cars/";
     }
 
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("car", new Car());
         model.addAttribute("edit", false);
-        return "edit";
+        return "car_edit";
     }
 
     @GetMapping("/edit/{index}")
@@ -56,19 +56,24 @@ public class CarController {
         Car car = carService.getCarById(index);
 
         if (car == null) {
-            return "redirect:/";
+            return "redirect:/cars/";
         }
 
         car.setId(index);
         model.addAttribute("car", car);
         model.addAttribute("edit", true);
 
-        return "edit";
+        return "car_edit";
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute Car car) {
+    public String save(@Valid Car car, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("edit", true);
+            return "car_edit";
+        }
+
         carService.saveCar(car);
-        return "redirect:/";
+        return "redirect:/cars/";
     }
 }
