@@ -1,42 +1,40 @@
 package org.example.project.service;
 
 import org.example.project.model.Driver;
+import org.example.project.repository.DriverRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DriverServiceImpl implements DriverService {
 
-    ArrayList<Driver> drivers = new ArrayList<>();
+    private final DriverRepository driverRepository;
 
-    @Override
-    public ArrayList<Driver> getAllDrivers() {
-        return drivers;
+    public DriverServiceImpl(DriverRepository driverRepository) {
+        this.driverRepository = driverRepository;
     }
 
     @Override
-    public Driver getDriverById(int id) {
-        if (id > -1 && id < drivers.size()) {
-            return drivers.get(id);
-        }
-
-        return null;
+    public List<Driver> getAllDrivers() {
+        return driverRepository.findAll();
     }
 
     @Override
-    public void removeDriverById(int id) {
-        if (id > -1 && id < drivers.size()) {
-            drivers.remove(id);
-        }
+    public Driver getDriverById(long id) {
+        return driverRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void removeDriverById(long id) {
+        Optional<Driver> driver = driverRepository.findById(id);
+        driver.ifPresent(driverRepository::delete);
     }
 
     @Override
     public void saveDriver(Driver driver) {
-        if (driver.getId() > -1 && driver.getId() < drivers.size()) {
-            drivers.remove(driver.getId());
-        }
-
-        drivers.add(driver);
+        driverRepository.save(driver);
     }
 }
